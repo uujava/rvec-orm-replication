@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd" >
+<log4j:configuration>
+
+	<appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] [%c] [%t] -- %m%n"/>
+		</layout>
+	</appender>
+
+	<appender name="systemLogFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${log_dir}/vector.log" />
+		<param name="datePattern" value="'.'yyyy-MM-dd" />
+		<param name="append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] [%c] [%t] -- %m%n"/>
+		</layout>
+	</appender>
+
+    <appender name="ormLogFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${log_dir}/cayenne.log" />
+        <param name="datePattern" value="'.'yyyy-MM-dd" />
+        <param name="append" value="true" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] [%c] [%t] -- %m%n"/>
+        </layout>
+    </appender>
+
+	<appender name="soapLogFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${log_dir}/soap.log" />
+		<param name="datePattern" value="'.'yyyy-MM-dd" />
+		<param name="append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] [%c] [%t] -- %m%n"/>
+		</layout>
+	</appender>
+
+    <appender name="webappsLogFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${log_dir}/webapps.log" />
+        <param name="datePattern" value="'.'yyyy-MM-dd" />
+        <param name="append" value="true" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] [%c] [%t] -- %m%n"/>
+        </layout>
+    </appender>
+
+	<appender name="profilerLogFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${log_dir}/web-profiler.log" />
+		<param name="datePattern" value="'.'yyyy-MM-dd" />
+		<param name="append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} | %t | %m%n"/>
+		</layout>
+	</appender>
+
+	<appender name="quartzLogFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${log_dir}/quartz.log" />
+		<param name="datePattern" value="'.'yyyy-MM-dd" />
+		<param name="append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] [%c] [%t] -- %m%n"/>
+		</layout>
+	</appender>
+
+	<logger name="org.quartz"  additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="quartzLogFileAppender" />
+	</logger>
+
+	<logger name="org.apache.cxf" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="soapLogFileAppender"/>
+	</logger>
+
+    <logger name="webapps" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="webappsLogFileAppender"/>
+    </logger>
+
+	<logger name="ru.programpark.nb.jetty.profiler" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="profilerLogFileAppender"/>
+	</logger>
+
+	<logger name="org.apache.cayenne.configuration" additivity="false">
+		<level value="ERROR"/>
+		<appender-ref ref="ormLogFileAppender"/>
+	</logger>
+
+	<logger name="org.apache.cayenne.access.QueryLogger" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="ormLogFileAppender"/>
+	</logger>
+	
+	<logger name="org.apache.cayenne.access" additivity="false">
+		<level value="ERROR"/>
+		<appender-ref ref="ormLogFileAppender"/>
+	</logger>
+
+	<logger name="org.apache.cayenne.log.CommonsJdbcEventLogger" additivity="false">
+		<level value="ERROR"/>
+		<appender-ref ref="ormLogFileAppender"/>
+	</logger>
+
+    <logger name="ru.programpark.orm.cayenne" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="ormLogFileAppender"/>
+    </logger>
+
+	<root>
+		<priority value="INFO"/>
+		<appender-ref ref="systemLogFileAppender"/>
+	</root>
+
+</log4j:configuration>
