@@ -13,8 +13,7 @@ Module.recreate :ORMT_ChannelTest do
           channel.cluster = "Cluster1"
           channel.orm_name = PLAN_CLASS
           channel.orm_class = PLAN_CLASS.to_sym
-          #channel.merge_factory = :UthLocomotivePlanMergeFactory # class implementing OrmReplicationMergeFactory contract 
-          channel.block_generator = :ORMT_M_ResourcePlanBlockFactory # module class implementing OrmReplicationBlockFactory contract
+          channel.merger = :ORMT_K_ResourcePlanMerger
           channel.query = "year = $year and day = $day and month = $month and hour = $hour" # ORM query. Parameters supplied by block generator
           channel.scheduler = "5/15 * * ? * *" 
           channel.activate = true  
@@ -37,9 +36,9 @@ Module.recreate :ORMT_ChannelTest do
   end
 end
 
-Module.recreate :ORMT_M_ResourcePlanBlockFactory do
+Module.recreate :ORMT_M_ResourcePlanMerger do
   methods do
-    def self.current_blocks
+    def get_blocks
       time = Time.now + 7200
       date = Date.today.next_day.to_time
       [
@@ -58,6 +57,11 @@ Module.recreate :ORMT_M_ResourcePlanBlockFactory do
       ]
     end      
   end
+end
+
+UserClass.recreate :ORMT_K_ResourcePlanMerger do
+  is :DefaultOrmReplicationMerger
+  modules :ORMT_M_ResourcePlanMerger
 end
 
 ORMT_ChannelTest.install
