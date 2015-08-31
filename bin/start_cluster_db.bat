@@ -1,5 +1,5 @@
 setlocal
-call env.bat
+call %~dp0env.bat
 set HSQL_PARAMS=--database.0 file:%CLUSTER1_HOME%\master\rvec --dbname.0 m1 ^
 --database.1 file:%CLUSTER1_HOME%\slave\rvec  --dbname.1 s1 ^
 --database.2 file:%CLUSTER2_HOME%\master\rvec --dbname.2 m2 ^

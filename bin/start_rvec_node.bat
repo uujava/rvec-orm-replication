@@ -1,6 +1,6 @@
 setlocal
-call env.bat
-jruby cfg_path.rb %1 > %TMP_BAT%
+call %~dp0env.bat
+jruby %~dp0cfg_path.rb %1 > %TMP_BAT%
 call %TMP_BAT%
 del /q %TMP_BAT%
 set RVEC_MEMORY_OPT=-J-Xms128m -J-Xmx512m ^

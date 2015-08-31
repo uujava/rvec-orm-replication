@@ -1,4 +1,4 @@
-call env.bat
+call %~dp0env.bat
 rmdir /s/q %RVEC_HOME%
 unzip %RELEASE_PATH% -d %RVEC_HOME%
 rmdir /s/q %CLUSTER1_HOME%\.netbeans-master_cfg
