@@ -4,7 +4,7 @@ Module.recreate :ORMT_M_ResourcePlan_Generator do
       next_day = Date.today.next_day.to_time
       next_hour = Time.now.round + 7200
       $log.debug "start generate plans for day: #{next_day} hours: #{next_hour}"     
-      ::User::ORMT_M_ResourcePlan.on_orm do |orm|
+      ::User::ORMT_Utils.on_orm :ORMT_M_ResourcePlan do |orm|
         generate_day_plan orm, next_day        
         generate_hour_plan orm, next_hour
       end

@@ -11,17 +11,27 @@ Model.recreate :ORMT_ResourcePlanTable do
   modules :ORMT_M_ResourcePlanTable
 	type :Table
 	constraint do
-		populate_by do      
-      plan_ready = @updated || Time.new(0)
-     ::User::ORMT_M_ResourcePlan.on_orm do |orm|
+		populate_by do   
+      plan_updated = @updated
+      unless plan_updated
+        channel = ::OrmReplication.get(::User::ORMT_ChannelTest::PLAN_CLASS)
+        
+        if channel.stat
+          plan_updated = Time.from_sql channel.stat.block_stat.last_time
+        else
+          plan_updated = Time.new 0
+        end
+      end
+
+     ::User::ORMT_Utils.on_orm :ORMT_M_ResourcePlan do |orm|
         _count = -1
         get_day_plan(orm).each do |row|
           _count = _count + 1
-          yield row.record_id, [[row.year,row.month, row.day].join('-'), "--#{row.hour}", row.resource, row.qnt, _count, plan_ready]
+          yield row.record_id, [[row.year,row.month, row.day].join('-'), "--#{row.hour}", row.resource, row.qnt, _count, plan_updated]
         end
         get_hour_plan(orm).each do |row|
           _count = _count + 1
-          yield row.record_id, [[row.year,row.month, row.day].join('-'), row.hour, row.resource, row.qnt, _count, plan_ready]
+          yield row.record_id, [[row.year,row.month, row.day].join('-'), row.hour, row.resource, row.qnt, _count, plan_updated]
         end
       end
 		end    

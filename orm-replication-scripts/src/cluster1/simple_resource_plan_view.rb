@@ -12,7 +12,7 @@ Model.recreate :ORMT_ResourcePlanTable do
 	constraint do
 		populate_by do      
       plan_ready = ::User::ORMT_M_Trigger.get_trigger.plan_ready
-      ::User::ORMT_M_ResourcePlan.on_orm do |orm|
+      ::User::ORMT_Utils.on_orm :ORMT_M_ResourcePlan do |orm|
         _count = -1
         get_day_plan(orm).each do |row|
           _count = _count + 1
