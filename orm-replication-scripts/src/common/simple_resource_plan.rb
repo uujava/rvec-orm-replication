@@ -35,7 +35,7 @@ Module.recreate :ORMT_M_ResourcePlan do
   attribute :resource do
     type :Plain
     column 'RESOURCE' do
-      length 10
+      length 20
     end
     allowed_class :string
   end

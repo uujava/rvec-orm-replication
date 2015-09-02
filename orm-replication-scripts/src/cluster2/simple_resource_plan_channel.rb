@@ -36,9 +36,12 @@ Module.recreate :ORMT_ChannelTest do
   end
 end
 
-Module.recreate :ORMT_M_ResourcePlanMerger do
+Module.recreate :ORMT_M_ResourcePlanMerger do  
+end
+
+Module.modify :ORMT_M_ResourcePlanMerger do
   methods do
-    def get_blocks
+    def get_blocks channel_id
       time = Time.now + 7200
       date = Date.today.next_day.to_time
       [

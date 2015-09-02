@@ -1,19 +1,18 @@
 ﻿{
 	'server' => [
 		{
-			'port' => '2001',
-			'ntf_port' => '20001',
-			'ip' => '192.168.3.156',
+			'port' => '2021',
+			'ntf_port' => '20021',
+			'ip' => '127.0.0.1',
 			'role' => 'Slave',
-			'cluster' => 'Cluster1'
+			'cluster' => 'Cluster3'
 		}
 	],
 	'database' => [
 		{
-			#'dburl' => 'jdbc:hsqldb:hsql://localhost/s1',
-			'dburl' => 'jdbc:oracle:thin:@192.168.3.28:1521/rvec.programpark.ru',
-			'user' => 'orm_s1',
-			'password' => 'orm_s1'
+			'dburl' => 'jdbc:hsqldb:hsql://localhost/s3',
+			'user' => 'S3',
+			'password' => 'S3'
 		}
 	],
 	'load_source' => [
@@ -26,9 +25,9 @@
 	],
 	'load_server' => [
 		{
-			'port' => '2000',
-			'ntf_port' => '20000',
-			'ip' => '192.168.3.163'
+			'port' => '2020',
+			'ntf_port' => '20020',
+			'ip' => '127.0.0.1'
 		}
 	],
 	'zookeeper' => [
@@ -37,14 +36,14 @@
 			'user' => 'rvec',
 			'password' => '123',
 			'timeout' => '10000',
-			'address' => '192.168.3.163:3001,192.168.3.163:3002,192.168.3.163:3003'
+			'address' => '127.0.0.1:3001'
 		}
 	],
 	'sequencer' => [
 		{
-			'server_num' => 2,
-			'server_max' => 1000, 
-			'range_num' => 2
+			'server_num' => 6, # Номер сервера
+			'server_max' => 1000, # Максимальное количество серверов
+			'range_num' => 1, # Номер начального диапазона
 		}
 	]
 

@@ -1,82 +1,56 @@
 Host.recreate "DBHost" do
   interface 0 do
-    ip "192.168.3.28"
+    ip "127.0.0.1"
   end
 end
 
-# DB DEFINITIONS REQUIRED FOR INCLUSTER ORM REPLICATION
-Database.recreate "MasterDB" do
-  description 'MasterDB'
-  #protocol "jdbc:hsqldb:hsql://"
-  protocol "jdbc:oracle:thin:@"
-  host "DBHost"
-  port 1521
-  resource "rvec.programpark.ru"
-  user "orm_m1"
-  password "orm_m1"
+# TOPOLOGY RESERVE CLUSTER REQUIRED
+ReserveCluster.recreate "Cluster3" do
+	nodes "master3", "slave3"
 end
 
 # DB DEFINITIONS REQUIRED FOR INCLUSTER ORM REPLICATION
-Database.recreate "SlaveDB" do
-  description 'SlaveDB'
-  #protocol "jdbc:hsqldb:hsql://"
-  protocol "jdbc:oracle:thin:@"
+Database.recreate "MasterDB3" do
+  description 'MasterDB3'
+  protocol "jdbc:hsqldb:hsql://"
   host "DBHost"
-  port 1521
-  resource "rvec.programpark.ru"
-  user "orm_s1"
-  password "orm_s1"
+  port 9001
+  resource "m3"
+  user "M3"
+  password "M3"
 end
 
-Host.recreate "Host_192.168.3.163" do
-  interface 0 do
-    ip "192.168.3.163"
-  end
+Database.recreate "SlaveDB3" do
+  description 'SlaveDB3'
+  protocol "jdbc:hsqldb:hsql://"
+  host "DBHost"
+  port 9001
+  resource "s3"
+  user "S3"
+  password "S3"
 end
 
-Host.recreate "Host_192.168.3.156" do
+Host.recreate "Host_127.0.0.1" do
   interface 0 do
-    ip "192.168.3.156"
+    ip "127.0.0.1"
   end
 end
 
 # TOPOLOGY SERVER NODES
-ApplicationServer.recreate "master" do
+ApplicationServer.recreate "master3" do
 	protocol "drbfire:"
-	host "Host_192.168.3.163"
-	port 2000
-	ntf_port 20000
-	orm_port 21000
-	data_source 'MasterDB'
+	host "Host_127.0.0.1"
+	port 2020
+	ntf_port 20020
+  orm_port 21020
+	data_source 'MasterDB3'
 end
 
-ApplicationServer.recreate "slave" do
+ApplicationServer.recreate "slave3" do
 	protocol "drbfire:"
-	host "Host_192.168.3.156"
-	port 2001
-	ntf_port 20001
-  orm_port 21001
-	data_source 'SlaveDB'
+	host "Host_127.0.0.1"
+	port 2021
+	ntf_port 20021
+  orm_port 21021
+	data_source 'SlaveDB3'
 end
-
-# TOPOLOGY RESERVE CLUSTER REQUIRED
-ReserveCluster.recreate "Cluster1" do
-	nodes "master", "slave"
-end
-
-OrmReplication.install
-
-Plugin.recreate "OrmReplicaton" do
-   description "Test Orm Replication for Cluster1" 
-   class_name '::OrmReplication::Plugin'
-   topology_node "Cluster1"
-   run true
-end
-
-Plugin.recreate "OrmReplicationTest" do
-  description "Quartz instance for OrmReplicationTests" 
-  run true
-   topology_node 'Cluster1'
-   class_name "QuartzPlugin" 
-   params :scheduler => :orm_repl_test, :replication_mode => :memory
-end 

@@ -67,6 +67,7 @@ Module.recreate :ORMT_Utils do
     end
         
     def self.orm_class orm_module
+      orm_module = orm_module.name if orm_module.class == ::Module
       raise "Имя модуля не соответствует соглашению ORMT_M_: #{orm_module}" unless /ORMT_M_/.match orm_module
       orm_module.to_s.gsub /(.*?\:\:)?ORMT_M_(.*)/, 'ORMT_K_\2'
     end

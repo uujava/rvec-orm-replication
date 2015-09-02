@@ -38,10 +38,6 @@
 			'timeout' => '10000',
 			'address' => '127.0.0.1:3001'
 		}
-	],'orm_server' => [
-	{
-		'port' => 23000
-	}
 	],
 	'sequencer' => [
 		{

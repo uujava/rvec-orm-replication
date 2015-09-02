@@ -30,11 +30,6 @@
 			'ip' => '127.0.0.1'
 		}
 	],
-	'orm_server' => [
-	{
-		'port' => 24000
-	}
-	],
 	'zookeeper' => [
 		{
 			'cluster' => 'ZooKeeper1',
