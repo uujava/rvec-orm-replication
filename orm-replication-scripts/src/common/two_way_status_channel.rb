@@ -68,7 +68,7 @@ Module.recreate :ORMT_ClusterStatusTest do
     end
    
     def self.get_trigger
-      ::User::Storage.each_object 'ClusterStatusTriggers' do |obj| 
+      ::User::Storage.each_object 'ClusterStatusTriggers' do |_, obj| 
         return obj        
       end
     end
@@ -90,6 +90,7 @@ Module.modify :ORMT_M_ClusterStatusMerger do
       $log.debug "get_blocks: #{channel_id}"
       @this_cluster = ::User::ORMT_ClusterStatusTest.this_cluster
       @updated = []
+      @has_data = false
       channel = ::User::UserObject.get channel_id
       $log.debug "get_blocks: #{channel} updated:#{@updated} this_cluster=#{@this_cluster}"
       target = channel.name.gsub ::User::ORMT_ClusterStatusTest::CHANNEL_PREFIX, ''
@@ -109,6 +110,7 @@ Module.modify :ORMT_M_ClusterStatusMerger do
  
     def inserted(new_record)
       $log.debug "inserted #{new_record}  updated:#{@updated}"
+      @has_data = true
       true
     end
  
@@ -117,6 +119,7 @@ Module.modify :ORMT_M_ClusterStatusMerger do
       updated = Time.from_sql(new_record.updated) > Time.from_sql(old_record.updated) and new_record.target != @this_cluster
       $log.debug "updated: #{updated} old: #{old_record} new: #{new_record} updated:#{@updated}"
       if updated
+        @has_data = true
         old_record.status = new_record.status
         old_record.updated = new_record.updated
         # собираем изменения сгенерированные кластером источником
@@ -147,7 +150,7 @@ Module.modify :ORMT_M_ClusterStatusMerger do
             ::User::ORMT_M_ClusterStatus.set_status orm, cluster_status[0], _this_cluster, cluster_status[1]
           end
         end
-        if !@updated.empty?
+        if @has_data
           ::User::ORMT_ClusterStatusTest.get_trigger.trigger_updated = Time.new
         end
       end
