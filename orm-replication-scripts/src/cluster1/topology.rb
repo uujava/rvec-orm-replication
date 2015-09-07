@@ -48,6 +48,13 @@ ApplicationServer.recreate "slave" do
 	data_source 'SlaveDB'
 end
 
+ApplicationServer.recreate "client" do
+	protocol "drbfire:"
+	host "Host_127.0.0.1"
+	port 4000
+	ntf_port 40000
+end
+
 # TOPOLOGY RESERVE CLUSTER REQUIRED
 ReserveCluster.recreate "Cluster1" do
 	nodes "master", "slave"
