@@ -8,11 +8,14 @@ class Shortcuts
   ARGS = {'master' => '', 'slave' => 'NBDesigner', 'client' => 'NBDesigner'}
 
   def bin_dir
-    @bin_dir ||= File.dirname(__FILE__).gsub /\//, '\\'
+    @bin_dir ||= File.absolute_path(File.dirname(__FILE__)).gsub /\//, '\\'
   end
 
   def tmp_io
-    @file ||= File.new "link.vbs", 'w' #Tempfile.new('create_demo_links.vbs')
+    return @file if @file
+    @file = File.new "link.vbs", 'w' #Tempfile.new('create_demo_links.vbs')
+    @file.write %q{Set oWS = WScript.CreateObject("WScript.Shell")}
+    @file
   end
 
   def args cfg_name
@@ -49,7 +52,7 @@ class Shortcuts
       pid = ::Process.spawn "cscript /NOLOGO \"#{script_file}\""
       ::Process.detach pid
     ensure
-      sleep 3
+      sleep 2
       File.delete script_file
     end
   end
@@ -57,7 +60,6 @@ class Shortcuts
   def generate_node_link(target_dir, node_name, args)
     puts "link #{target_dir} #{node_name} #{args}"
     tmp_io.write %Q{
-    Set oWS = WScript.CreateObject("WScript.Shell")
     sLinkFile = "#{bin_dir}\\#{target_dir}\\#{node_name}.lnk"
     Set oLink = oWS.CreateShortcut(sLinkFile)
     oLink.Arguments =  "#{node_name} #{args}"
@@ -70,7 +72,6 @@ class Shortcuts
 
   def generate_log_link(target_dir, log_dir, node_name)
     tmp_io.write %Q{
-    Set oWS = WScript.CreateObject("WScript.Shell")
     sLinkFile = "#{bin_dir}\\#{target_dir}\\#{node_name} log.lnk"
     Set oLink = oWS.CreateShortcut(sLinkFile)
     oLink.Description = "Logs for node  #{node_name}"
