@@ -1,4 +1,4 @@
-require 'tempfile'
+require 'fileutils'
 
 class Shortcuts
 
@@ -74,6 +74,7 @@ class Shortcuts
     log_dir = File.absolute_path(log_dir).gsub /\//, '\\'
     lnk_file = "#{bin_dir}\\#{target_dir}\\#{node_name} log.lnk"
     File.delete lnk_file
+    FileUtils.mkdir_p log_dir
     tmp_io.write %Q{
     Set oLink = oWS.CreateShortcut("#{lnk_file}")
     oLink.Description = "Logs for node  #{node_name}"
