@@ -1,4 +1,4 @@
-require "#{File.dirname(__FILE__)}/sortcuts.rb"
+require "#{File.dirname(__FILE__)}/shortcuts"
 cfg = ARGV[0]
 server = cfg[0]
 cluster_num = cfg[1]

@@ -1,0 +1,1 @@
+jruby -e "require 'shortcuts'; Shortcuts.process"

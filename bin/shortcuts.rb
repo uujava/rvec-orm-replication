@@ -4,7 +4,6 @@ class Shortcuts
 
   MAPPING = {'m' => 'master', 's' => 'slave', 'c' => 'client'}
   REVERSE_MAPPING = MAPPING.invert
-  puts REVERSE_MAPPING.inspect
   ARGS = {'master' => '', 'slave' => 'NBDesigner', 'client' => 'NBDesigner'}
 
   def bin_dir
@@ -59,9 +58,10 @@ class Shortcuts
 
   def generate_node_link(target_dir, node_name, args)
     puts "link #{target_dir} #{node_name} #{args}"
+    lnk_file = "#{bin_dir}\\#{target_dir}\\#{node_name}.lnk"
+    File.delete lnk_file
     tmp_io.write %Q{
-    sLinkFile = "#{bin_dir}\\#{target_dir}\\#{node_name}.lnk"
-    Set oLink = oWS.CreateShortcut(sLinkFile)
+    Set oLink = oWS.CreateShortcut("#{lnk_file}")
     oLink.Arguments =  "#{node_name} #{args}"
     oLink.WorkingDirectory = "#{bin_dir}"
     oLink.Description = "Start test node  #{node_name} #{args}"
@@ -71,11 +71,14 @@ class Shortcuts
   end
 
   def generate_log_link(target_dir, log_dir, node_name)
+    log_dir = File.absolute_path(log_dir).gsub /\//, '\\'
+    lnk_file = "#{bin_dir}\\#{target_dir}\\#{node_name} log.lnk"
+    File.delete lnk_file
     tmp_io.write %Q{
-    sLinkFile = "#{bin_dir}\\#{target_dir}\\#{node_name} log.lnk"
-    Set oLink = oWS.CreateShortcut(sLinkFile)
+    Set oLink = oWS.CreateShortcut("#{lnk_file}")
     oLink.Description = "Logs for node  #{node_name}"
-    oLink.TargetPath = "#{log_dir}"
+    oLink.TargetPath = "#{log_dir}\\"
+    oLink.WorkingDirectory = "#{log_dir}\\"
     oLink.Save
    }
   end
@@ -84,5 +87,3 @@ class Shortcuts
     new.create_and_run 'shortcuts'
   end
 end
-
-Shortcuts.process
