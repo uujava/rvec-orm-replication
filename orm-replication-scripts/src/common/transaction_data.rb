@@ -13,6 +13,7 @@ Module.modify :ORMT_M_TransactionData do
     def self.initialize 
       transient :transactions  # holds ordered linked tx_id list 
       transient :lock
+      transient :initial_tx
     end
     
     #TODO implement policy to cleanup processed in DB
@@ -23,7 +24,8 @@ Module.modify :ORMT_M_TransactionData do
           @transactions = nil
         end
       end
-      unless @transactions
+      if @transactions.nil? or @initial_tx.nil? or @initial_tx > tx_id
+        @initial_tx = tx_id
         from_db = []
         ::User::ORMT_M_Transactions.find_unprocessed tx_id, Time.now, type  do |obj|
             from_db << [Time.from_sql(obj.tx_id), obj.flag]          
@@ -116,9 +118,9 @@ Module.modify :ORMT_M_TransactionData do
       now = Time.now
       if unprocessed_count == 0
         new_tx = self.tx_id + max_block
-        if new_tx < now + max_block
-          $log.debug "touch_tx #{tx_id} #{max_block} new tx: #{new_tx}"
-          self.tx_id = new_tx
+        if new_tx < now
+          $log.debug "touch_tx #{tx_id} #{max_block/2} new tx: #{new_tx}"
+          self.tx_id += max_block/2
         end
       end
       self.tx_id

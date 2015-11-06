@@ -1,3 +1,5 @@
+Dsl.run_file File.dirname(__FILE__)+"/../common/orm_test_utils.rb"
+Dsl.run_file File.dirname(__FILE__)+"/../common/loan_transactions.rb" unless ::User.const_defined? :ORMT_M_Transactions
 Dsl.run_file File.dirname(__FILE__)+"/../common/person_loan.rb" unless ::User.const_defined? :ORMT_M_Person
 
 Module.recreate :ORMT_M_Loan_Generator do
@@ -11,6 +13,7 @@ Module.recreate :ORMT_M_Loan_Generator do
       # on_orm provides single transation
       tx_id = Time.new
       
+      # single transaction for loan and persons
       ::User::ORMT_Utils.on_orm :ORMT_M_Person do |orm|
         # not optimal as it iterates over all persons!
         persons = LinkedList.new 
@@ -23,10 +26,14 @@ Module.recreate :ORMT_M_Loan_Generator do
             persons.add person
           end
         end
-        # add new one        
-        persons.add(ORMT_M_Person.add_person orm, 'Generated' + tx_id, 'test')
         
+        # add new one        
+        person = ORMT_M_Person.add_person orm, 'Generated' + tx_id, 'test'
+        persons.add(person)
+        
+        # add loans for each person
         persons.each do |person|
+          person.modified = tx_id
           ORMT_M_Loan.add_loan orm, person, 'Bank', rand(100), 'Test loan ' + tx_id, tx_id
         end
       end

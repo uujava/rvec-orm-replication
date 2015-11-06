@@ -31,6 +31,15 @@ Module.recreate :ORMT_M_Person do
     type :ReferenceArray
     allowed_class :ORMT_K_Loan
   end
+  
+  attribute :modified do
+    type :Plain   
+    allowed_class :date 
+    column 'MODFD' do
+      type 'TIMESTAMP'
+    end
+  end
+  
 end
 
 # Loan(person:Person, bank, description, modified, value)

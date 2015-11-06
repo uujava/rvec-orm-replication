@@ -2,6 +2,7 @@ Dsl.run_file File.dirname(__FILE__)+"/../common/person_loan.rb" unless ::User.co
 Dsl.run_file File.dirname(__FILE__)+"/../common/channel_reference.rb" unless ::User.const_defined? :ORMT_M_Channel
 Dsl.run_file File.dirname(__FILE__)+"/transaction_channel.rb" unless ::User.const_defined? :ORMT_M_TransactionChannelMerger
 
+Plugin.stop "OrmReplication2"
 
 # merger with transactions
 Module.recreate :ORMT_M_TxMerger do
@@ -11,12 +12,12 @@ Module.recreate :ORMT_M_TxMerger do
       @channel = ::User::UserObject.get channel_id
       @data = @channel.data_object
       @tx_id = @data.next_unprocessed 
-      $log.debug "start tx_id: #{@tx_id}  for channel #{@channel}"
-      [
-        ::OrmReplication.create_block(          
-          :last_tx  => @tx_id
-        )
-      ]
+      if @tx_id
+        $log.debug "start tx_id: #{@tx_id}  for channel #{@channel}"
+        [::OrmReplication.create_block(:last_tx  => @tx_id)]
+      else
+        []
+      end
     end      
    
   end
@@ -27,8 +28,10 @@ Module.recreate :ORMT_M_TxRootMerger do
   methods do
     def finish is_error
       unless is_error
-        @data.mark_processed @tx_id        
-        $log.debug "finished tx_id: #{@tx_id}  for channel #{@channel.name}"
+        if @tx_id
+          @data.mark_processed @tx_id        
+          $log.debug "finished tx_id: #{@tx_id}  for channel #{@channel.name}"
+        end
       end
     end    
   end
@@ -55,7 +58,7 @@ channels =  {
     channel.orm_name = orm_name
     channel.orm_class = :ORMT_K_Person
     channel.merger = :ORMT_K_TxMerger
-    channel.query = "loan_ref.modified = $last_tx"
+    channel.query = "modified = $last_tx"
     channel.scheduler = "ORMT_LOAN"
     channel.activate = true  
     channel.data_object = data_object
@@ -74,3 +77,4 @@ channels =  {
 
 result = ::OrmReplication.bulk_upsert channels
 puts result
+Plugin.start "OrmReplication2"

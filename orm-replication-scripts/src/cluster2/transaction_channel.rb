@@ -1,7 +1,9 @@
+Dsl.run_file File.dirname(__FILE__)+"/../common/orm_test_utils.rb"
 Dsl.run_file File.dirname(__FILE__)+"/../common/loan_transactions.rb" unless ::User.const_defined? :ORMT_M_TransactionChannelMerger
 Dsl.run_file File.dirname(__FILE__)+"/../common/transaction_data.rb" unless ::User.const_defined? :ORMT_M_TransactionData
 Dsl.run_file File.dirname(__FILE__)+"/../common/channel_reference.rb" unless ::User.const_defined? :ORMT_M_Channel
 
+Plugin.stop "OrmReplication2"
 # merger for transactions
 ::User::Module.recreate :ORMT_M_TransactionChannelMerger do
   methods do    
@@ -108,3 +110,5 @@ module ::User::ORMT_M_TransactionChannelMerger
   puts result.inspect
 
 end
+
+Plugin.start "OrmReplication2"
