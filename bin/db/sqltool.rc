@@ -1,0 +1,29 @@
+urlid m1
+url jdbc:hsqldb:hsql://localhost/m1
+username SA
+password
+
+urlid m2
+url jdbc:hsqldb:hsql://localhost/m2
+username SA
+password
+
+urlid m3
+url jdbc:hsqldb:hsql://localhost/m3
+username SA
+password
+
+urlid s1
+url jdbc:hsqldb:hsql://localhost/s1
+username SA
+password
+
+urlid s2
+url jdbc:hsqldb:hsql://localhost/s2
+username SA
+password
+
+urlid s3
+url jdbc:hsqldb:hsql://localhost/s3
+username SA
+password

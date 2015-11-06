@@ -6,35 +6,45 @@ class Shortcuts
   REVERSE_MAPPING = MAPPING.invert
   ARGS = {'master' => '', 'slave' => 'NBDesigner', 'client' => 'NBDesigner'}
 
-  def bin_dir
-    @bin_dir ||= File.absolute_path(File.dirname(__FILE__)).gsub /\//, '\\'
+  def self.bin_dir
+    @@bin_dir ||= File.absolute_path(File.dirname(__FILE__)).gsub /\//, '\\'
   end
 
   def tmp_io
-    return @file if @file
-    @file = File.new "link.vbs", 'w' #Tempfile.new('create_demo_links.vbs')
-    @file.write %q{Set oWS = WScript.CreateObject("WScript.Shell")}
-    @file
+    return @@file if @@file
+    @@file = File.new "link.vbs", 'w' #Tempfile.new('create_demo_links.vbs')
+    @@file.write %q{Set oWS = WScript.CreateObject("WScript.Shell")}
+    @@file
   end
 
-  def args cfg_name
+  def self.args cfg_name
     ARGS[server_type(cfg_name)]
   end
 
-  def server_number(cluster_name)
+  def self.server_number(cluster_name)
     File.basename(cluster_name).gsub /cluster/, ''
   end
 
-  def server_type(cfg_name)
+  def self.client_number(client_name)
+    num = 0
+    MAPPING.each do |k,v| 
+		num +=1 
+		if k == client_name or v == client_name
+		   return num
+		end
+	end
+  end
+
+  def self.server_type(cfg_name)
     File.basename(cfg_name, '.rb').gsub /_cfg/, ''
   end
 
-  def node_name cluster_name, cfg_name
+  def self.node_name cluster_name, cfg_name
     node_name = REVERSE_MAPPING[server_type(cfg_name)]
     "#{node_name}#{server_number(cluster_name)}"
   end
 
-  def create_and_run target_dir
+  def self.create_and_run target_dir
     begin
       Dir["#{bin_dir}/../cluster*"].each do |cluster_name|
         puts "cluster: #{cluster_name}"
@@ -56,7 +66,7 @@ class Shortcuts
     end
   end
 
-  def generate_node_link(target_dir, node_name, args)
+  def self.generate_node_link(target_dir, node_name, args)
     puts "link #{target_dir} #{node_name} #{args}"
     lnk_file = "#{bin_dir}\\#{target_dir}\\#{node_name}.lnk"
     File.delete lnk_file
@@ -70,7 +80,7 @@ class Shortcuts
     }
   end
 
-  def generate_log_link(target_dir, log_dir, node_name)
+  def self.generate_log_link(target_dir, log_dir, node_name)
     log_dir = File.absolute_path(log_dir).gsub /\//, '\\'
     lnk_file = "#{bin_dir}\\#{target_dir}\\#{node_name} log.lnk"
     File.delete lnk_file
@@ -85,6 +95,6 @@ class Shortcuts
   end
 
   def self.process
-    new.create_and_run 'shortcuts'
+    create_and_run 'shortcuts'
   end
 end

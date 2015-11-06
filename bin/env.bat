@@ -5,6 +5,7 @@ if "%JRUBY_HOME% " == " " echo "set JRUBY_HOME to jruby 1.7.4 installation home 
 set TMP_BAT=%~dp0~env_%RANDOM%temp.bat
 set RELEASE_PATH=h:\code\rvec-production\target\rvec-sdk-ide-1.0(${env.BUILD_NUMBER}).zip
 set RVEC_HOME=h:\data\rvec-release
+set HSQL_PATH=%RVEC_HOME%\server\rvec_server\modules\ext\ru.programpark.rvec.common-deps\org-hsqldb\hsqldb.jar
 set CLUSTER1_HOME=%~dp0..\cluster1
 set CLUSTER2_HOME=%~dp0..\cluster2
 set CLUSTER3_HOME=%~dp0..\cluster3

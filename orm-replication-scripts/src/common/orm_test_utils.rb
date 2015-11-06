@@ -2,9 +2,9 @@
 Module.recreate :ORMT_Utils do   
   methods do
     
-    def self._records(orm, orm_query, query_params, &block)
+    def self._records(orm, orm_query, query_params, target_class = orm.bin_name.to_sym, &block)
       orm.execute do
-        type orm.bin_name.to_sym
+        type target_class
         query orm_query
         query_params.each do |k,v|
           param k, v          
@@ -13,12 +13,12 @@ Module.recreate :ORMT_Utils do
       end
     end
     
-    def self._raw_records(orm, orm_query, query_params, &block)
+    def self._raw_records(orm, orm_query, query_params,target_class = orm.bin_name.to_sym, &block)
       orm.execute do
-        type orm.bin_name.to_sym   
+        type target_class 
         query orm_query
         query_params.each {|k,v| param k, v}          
-        sql_result &block
+        row_result &block
       end
     end
         
@@ -43,16 +43,17 @@ Module.recreate :ORMT_Utils do
     # имя таблицы - upcase имя модуля
     # индексы - массив массивов имен колонок
     def self.install orm_module, indices, _version = nil
-      orm_module = orm_module.to_s      
-      orm_class = orm_class(orm_module)
-      puts "create class: #{orm_class} for module: #{orm_module}"
-      UserClass.recreate  orm_class.to_sym do
-        modules orm_module.to_sym
-        table orm_module.upcase
-      end
-      
-      msg = ::User::ORM.generate orm_class do
-        useclasses orm_class.to_sym
+      orm_class = create_class(orm_module)
+      generate_orm _version, orm_class
+      create_indices orm_module, orm_module, indices if indices and !indices.empty?
+    end
+
+    def self.generate_orm _version, *orm_classes 
+      sleep 2
+      cls_sym = orm_classes.map {|c| c.to_sym}
+      puts "classes for binary: #{cls_sym}"
+      msg = ::User::ORM.generate cls_sym[0].to_s do
+        useclasses *cls_sym
         generate_db_schema do
           drop_tables true    
           fk_constraints true
@@ -60,22 +61,36 @@ Module.recreate :ORMT_Utils do
         version _version if _version
       end
       puts msg
-      puts "wait binary #{orm_class} for module #{orm_module} comitted"
+           
+      puts "wait binary #{cls_sym[0]} for module #{cls_sym} comitted"
       sleep 5
-      puts "creating indices #{orm_module} #{indices}"
-      create_indices orm_module, indices if indices and !indices.empty?
+
     end
-        
+    
+    def self.create_class orm_module
+      orm_module = orm_module.to_s      
+      orm_class = orm_class(orm_module)
+      puts "create class: #{orm_class} for module: #{orm_module}"
+      UserClass.recreate  orm_class.to_sym do
+        modules orm_module.to_sym
+        table orm_module.upcase
+      end
+      orm_class
+    end
+    
     def self.orm_class orm_module
       orm_module = orm_module.name if orm_module.class == ::Module
       raise "Имя модуля не соответствует соглашению ORMT_M_: #{orm_module}" unless /ORMT_M_/.match orm_module
       orm_module.to_s.gsub /(.*?\:\:)?ORMT_M_(.*)/, 'ORMT_K_\2'
     end
     
-    def self.create_indices orm_module, indices      
-      orm = ::User::ORM.get orm_class(orm_module)
-      indices.each_with_index do |columns, i|
-        begin    
+    def self.create_indices base_module, orm_module, indices      
+      
+      puts "creating indices #{base_module}:#{orm_module} #{indices}"
+      
+      orm = ::User::ORM.get orm_class(base_module)
+      begin
+        indices.each_with_index do |columns, i|
           table = orm_module.upcase
           idx = table+'_IDX'  + i
           idx_query = "CREATE INDEX #{idx} ON #{table} (#{columns.join(', ')})"
@@ -99,10 +114,10 @@ Module.recreate :ORMT_Utils do
             end
           rescue Exception => ex
             $log.error "Error creating ORM test index  #{idx} on #{table}: #{ex.cause}"
-          end
-        ensure
-          orm.done
+          end        
         end
+      ensure
+        orm.done
       end
     end
   end
