@@ -143,5 +143,5 @@ Module.modify :ORMT_M_ResourcePlan do
   end
 end
 
-::User::ORMT_Utils.install :ORMT_M_ResourcePlan, [%w{YEAR MONTH DAY HOUR}], 22
+::User::ORMT_Utils.install :ORMT_M_ResourcePlan, [%w{YEAR MONTH DAY HOUR}]
 

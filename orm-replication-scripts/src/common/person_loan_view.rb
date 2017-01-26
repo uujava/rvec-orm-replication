@@ -12,7 +12,7 @@ Model.recreate :ORMT_PersonTable do
 	constraint do
 		populate_by do         
       ::User::ORMT_M_Person.get_persons.each_with_index do |data, i|
-        yield i, [data.record_id, data.name, data.description]
+        yield i, [data.record_id, data.name, data.description, data.modified]
       end    
     end
 	end
@@ -28,7 +28,14 @@ Model.recreate :ORMT_PersonTable do
 			title "Паспортные Данные"
 			type :String		
       mapping do
-        cluster = at(2) 
+        at(2) 
+      end
+		end
+    column :modified do
+			title "Изменен"
+			type :Date		
+      mapping do
+        at(3) 
       end
 		end
 	end

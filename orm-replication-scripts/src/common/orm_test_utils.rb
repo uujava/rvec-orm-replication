@@ -42,13 +42,13 @@ Module.recreate :ORMT_Utils do
     # имя класса == имя ORM - префикс ORMT_К_
     # имя таблицы - upcase имя модуля
     # индексы - массив массивов имен колонок
-    def self.install orm_module, indices, _version = nil
+    def self.install orm_module, indices
       orm_class = create_class(orm_module)
-      generate_orm _version, orm_class
+      generate_orm orm_class
       create_indices orm_module, orm_module, indices if indices and !indices.empty?
     end
 
-    def self.generate_orm _version, *orm_classes 
+    def self.generate_orm *orm_classes 
       sleep 2
       cls_sym = orm_classes.map {|c| c.to_sym}
       puts "classes for binary: #{cls_sym}"
@@ -58,7 +58,6 @@ Module.recreate :ORMT_Utils do
           drop_tables true    
           fk_constraints true
         end
-        version _version if _version
       end
       puts msg
            

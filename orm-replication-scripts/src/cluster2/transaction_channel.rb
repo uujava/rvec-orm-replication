@@ -1,11 +1,14 @@
 Dsl.run_file File.dirname(__FILE__)+"/../common/orm_test_utils.rb"
-Dsl.run_file File.dirname(__FILE__)+"/../common/loan_transactions.rb" unless ::User.const_defined? :ORMT_M_TransactionChannelMerger
-Dsl.run_file File.dirname(__FILE__)+"/../common/transaction_data.rb" unless ::User.const_defined? :ORMT_M_TransactionData
+Dsl.run_file File.dirname(__FILE__)+"/../common/loan_transactions.rb" 
+Dsl.run_file File.dirname(__FILE__)+"/../common/transaction_data.rb"
 Dsl.run_file File.dirname(__FILE__)+"/../common/channel_reference.rb" unless ::User.const_defined? :ORMT_M_Channel
 
 Plugin.stop "OrmReplication2"
+
 # merger for transactions
-::User::Module.recreate :ORMT_M_TransactionChannelMerger do
+::User::Module.recreate :ORMT_M_TransactionChannelMerger do;end
+
+::User::Module.modify :ORMT_M_TransactionChannelMerger do
   methods do    
     
     def self.initialize
@@ -25,7 +28,7 @@ Plugin.stop "OrmReplication2"
     end
     
     def get_blocks channel_id
-      @channel = UserObject.get channel_id
+      @channel = ::User::UserObject.get channel_id
       @data = @channel.data_object
       @records = [] # collect in memory, update on finish
       @data.next_block MAX_BLOCK, MAX_TX_COUNT
@@ -52,12 +55,19 @@ Plugin.stop "OrmReplication2"
           @data.update_internal @records
           $log.debug "added tx #{@data.inspect} last_tx: #{@data.tx_id}"          
         end
-        if @data.tx_id + MAX_BLOCK > Time.now
-          @channel.activate = false
-          @channel.scheduler = DEFAULT_SCHEDULE
-          @channel.activate = true
+        if @data.tx_id + MAX_BLOCK > Time.now or @data.unprocessed_count > 0
+          set_scheduler @channel, DEFAULT_SCHEDULE
+        else
+          set_scheduler @channel, INIT_SCHEDULE
         end
       end
+    end
+    
+    def set_scheduler channel, cron_str
+      return if channel.scheduler == cron_str      
+      channel.scheduler = cron_str
+      channel.activate = true
+      $log.debug "channel #{channel.name} scheduler reset: #{cron_str}"
     end
   end
 end

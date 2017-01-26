@@ -4,6 +4,7 @@
 Module.recreate :ORMT_M_TransactionData do
   attribute :tx_id
   attribute :type 
+  attribute :flush
 end
 
 Module.modify :ORMT_M_TransactionData do
@@ -13,25 +14,26 @@ Module.modify :ORMT_M_TransactionData do
     def self.initialize 
       transient :transactions  # holds ordered linked tx_id list 
       transient :lock
-      transient :initial_tx
     end
     
     #TODO implement policy to cleanup processed in DB
-    def get_internal force = false
+    def get_internal
       @lock ||= Monitor.new
-      if force
-        @lock.synchronzie do
+      if flush
+        self.flush = false
+        $log.debug "flushed tx data internals #{tx_id}"
+        @lock.synchronize do
           @transactions = nil
         end
       end
-      if @transactions.nil? or @initial_tx.nil? or @initial_tx > tx_id
-        @initial_tx = tx_id
+      
+      unless @transactions
         from_db = []
         ::User::ORMT_M_Transactions.find_unprocessed tx_id, Time.now, type  do |obj|
             from_db << [Time.from_sql(obj.tx_id), obj.flag]          
         end
-      
-        from_db.sort! {|t1, t2| t1[0] <=> t2[0]} 
+        from_db.sort! {|t1, t2| t1[0] <=> t2[0]}
+        $log.debug "loaded tx from_db #{from_db.inspect}"
         @lock.synchronize do 
           @transactions = from_db 
         end
@@ -69,6 +71,7 @@ Module.modify :ORMT_M_TransactionData do
       return [] if unprocessed_count > max_count
       internal = get_internal.last
       last_id = internal ? internal[0] : tx_id
+      last_id = last_id > tx_id ? last_id : tx_id 
       curr_time = Time.now
       max_id = (curr_time - tx_id) > max_block ? tx_id + max_block : curr_time
       [
@@ -118,9 +121,15 @@ Module.modify :ORMT_M_TransactionData do
       now = Time.now
       if unprocessed_count == 0
         new_tx = self.tx_id + max_block
-        if new_tx < now
-          $log.debug "touch_tx #{tx_id} #{max_block/2} new tx: #{new_tx}"
-          self.tx_id += max_block/2
+        if new_tx + max_block < now
+          $log.debug "touch_tx #{tx_id} #{max_block} new tx: #{new_tx}"
+          self.tx_id = new_tx
+        else          
+          new_tx = now - max_block
+          if new_tx > self.tx_id
+            $log.debug "touch_tx #{tx_id} #{max_block} new now, new tx: #{now - max_block}"
+            self.tx_id = new_tx
+          end
         end
       end
       self.tx_id

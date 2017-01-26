@@ -59,14 +59,10 @@ Module.modify :ORMT_M_Transactions do
      
      def self.mark_processed tx_id, type
        begin
+         query_params= {:tx_id => Time.to_sql(tx_id), :type => type}
          ::User::ORMT_Utils.on_orm :ORMT_M_Transactions do |orm|
-           ::User::ORMT_Utils._records(orm, 
-             "tx_id = $tx_id and type = $type",
-             {
-               :tx_id => tx_id, 
-               :type => type
-             }
-           ) do |tx|
+           ::User::ORMT_Utils._records(orm, "tx_id = $tx_id and type = $type", query_params) do |tx|
+             $log.debug "mark processed #{tx}"
              tx.flag = 1
            end
          end     
@@ -82,4 +78,4 @@ end
 ORMT_M_Transactions.initialize
 
 # register ORM stuff
-::User::ORMT_Utils.install :ORMT_M_Transactions, [%w{TX_ID FLAG}], 5
+::User::ORMT_Utils.install :ORMT_M_Transactions, [%w{TX_ID FLAG}]

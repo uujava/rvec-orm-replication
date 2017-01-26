@@ -28,7 +28,7 @@ Module.recreate :ORMT_ClusterStatusTest do
           channel.merger = :ORMT_K_ClusterStatusMerger
           # читаем только те данные, которые генерит соответствующий кластер
           channel.query = "target = $target_cluster"
-          channel.scheduler = "0/20 * * ? * *" 
+          channel.scheduler = "* 0/1 * ? * *" 
           channel.activate = true  
         end
       end

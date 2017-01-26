@@ -26,7 +26,7 @@ Module.recreate :ORMT_M_Person do
       length 400
     end   
   end
- 
+  
   attribute :loan_ref do
     type :ReferenceArray
     allowed_class :ORMT_K_Loan
@@ -57,8 +57,14 @@ Module.recreate :ORMT_M_Loan do
   attribute :person do
     type :Reference
     allowed_class :ORMT_K_Person
+    column 'PERSON_ID' 
+  end
+  
+  attribute :person_id do
+    type :Integer
+    allowed_class :long
     column 'PERSON_ID' do
-      type 'NUMERIC'
+	    type 'NUMERIC'
     end
   end
 
@@ -108,12 +114,12 @@ Module.modify :ORMT_M_Person do
       all_persons
     end
     
-    def self.add_person orm, name, description
-      obj = nil
+    def self.add_person orm, tx_id
       obj = orm.create_object :ORMT_K_Person
-      obj.name = name
-      obj.description = description
-      obj 
+      obj.name = "P_#{tx_id}"
+      obj.description = "Generated at #{tx_id}"
+      obj.modified = tx_id
+      obj
     end
     
     def self.each orm
@@ -131,7 +137,7 @@ Module.modify :ORMT_M_Loan do
     def self.get_loans person_id
       person_loans = []
       ::User::ORMT_Utils.on_orm :ORMT_M_Person do |orm|
-        ::User::ORMT_Utils._records(orm, "person.record_id = $person_id", { :person_id=> person_id}, :ORMT_K_Loan) do |row|
+        ::User::ORMT_Utils._records(orm, "person = $person_id", { :person_id=> person_id}, :ORMT_K_Loan) do |row|
           person_loans << row
         end
       end
@@ -149,7 +155,7 @@ Module.modify :ORMT_M_Loan do
     end
     
     def self.each orm, person_id
-      ::User::ORMT_Utils._records(orm, "person.record_id = $person_id", { :person_id=> person_id}, :ORMT_K_Loan) do |row|
+      ::User::ORMT_Utils._records(orm, "person = $person_id", { :person_id=> person_id}, :ORMT_K_Loan) do |row|
           yield row
       end
     end
@@ -161,7 +167,7 @@ end
    orm_classes = []
    orm_classes << create_class(:ORMT_M_Person)
    orm_classes << create_class(:ORMT_M_Loan)
-   generate_orm 6, *orm_classes 
+   generate_orm *orm_classes 
    create_indices :ORMT_M_Person, :ORMT_M_Loan, [['PERSON_ID'],['MODFD']]
 end   
 

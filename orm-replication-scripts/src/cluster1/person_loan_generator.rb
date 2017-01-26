@@ -1,6 +1,6 @@
 Dsl.run_file File.dirname(__FILE__)+"/../common/orm_test_utils.rb"
-Dsl.run_file File.dirname(__FILE__)+"/../common/loan_transactions.rb" unless ::User.const_defined? :ORMT_M_Transactions
-Dsl.run_file File.dirname(__FILE__)+"/../common/person_loan.rb" unless ::User.const_defined? :ORMT_M_Person
+Dsl.run_file File.dirname(__FILE__)+"/../common/loan_transactions.rb"
+Dsl.run_file File.dirname(__FILE__)+"/../common/person_loan.rb"
 
 Module.recreate :ORMT_M_Loan_Generator do
   methods do
@@ -26,16 +26,17 @@ Module.recreate :ORMT_M_Loan_Generator do
             persons.add person
           end
         end
-        
-        # add new one        
-        person = ORMT_M_Person.add_person orm, 'Generated' + tx_id, 'test'
-        persons.add(person)
-        
-        # add loans for each person
+                
+        # add loans for last 9 persons
         persons.each do |person|
           person.modified = tx_id
           ORMT_M_Loan.add_loan orm, person, 'Bank', rand(100), 'Test loan ' + tx_id, tx_id
         end
+        
+        # add new one        
+        person = ORMT_M_Person.add_person orm, tx_id
+        ORMT_M_Loan.add_loan orm, person, 'Bank', rand(100), 'Test loan ' + tx_id, tx_id
+
       end
       # insert transaction record
       ::User::ORMT_Utils.on_orm :ORMT_M_Transactions do |orm|

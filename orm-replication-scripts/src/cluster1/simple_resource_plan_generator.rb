@@ -28,7 +28,7 @@ Module.recreate :ORMT_M_Trigger do
      
     def self.install
       Storage.recreate(ORMT_M_Trigger.TRIGGER_STORAGE) {}
-      UserObject.construct :ORMT_K_Trigger, ORMT_M_Trigger.TRIGGER_STORAGE do |obj|
+      ::User::UserObject.construct :ORMT_K_Trigger, ORMT_M_Trigger.TRIGGER_STORAGE do |obj|
         obj.name = ORMT_M_Trigger.TRIGGER_NAME
       end
     end
@@ -68,7 +68,7 @@ Job.recreate :orm_repl_test, "test.resource_plan" do
    user_class :ORMT_K_ResourcePlan_Generator
    trigger 'test.test_trigger' do
      with_cron_schedule do
-       cron_schedule "0/20 * * * * ?"
+       cron_schedule "* 0/2 * * * ?"
      end
    end
 end

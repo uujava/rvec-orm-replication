@@ -105,6 +105,6 @@ end
 #first time setup constants 
 ::User::ORMT_M_ClusterStatus.initialize
 # register ORM stuff
-::User::ORMT_Utils.install :ORMT_M_ClusterStatus, [%w{SOURCE TARGET}], 5
+::User::ORMT_Utils.install :ORMT_M_ClusterStatus, [%w{SOURCE TARGET}]
 ::User::ORMT_M_ClusterStatus.register
 
