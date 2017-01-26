@@ -15,7 +15,7 @@ set RVEC_MEMORY_OPT=-J-Xms128m -J-Xmx512m ^
 -J-XX:NumberOfGCLogFiles=10 ^
 -J-XX:GCLogFileSize=10000K ^
 -J-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=%DEBUG_PORT%
-
+title %1
 rmdir /q /s %VAR_DIR%
 mkdir %VAR_DIR%
 del /q %TMP_BAT%

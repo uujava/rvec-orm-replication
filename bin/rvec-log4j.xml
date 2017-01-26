@@ -61,6 +61,15 @@
 			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] [%c] [%t] -- %m%n"/>
 		</layout>
 	</appender>
+	
+	<appender name="loanChannel" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${log_dir}/loan_channel.log" />
+		<param name="datePattern" value="'.'yyyy-MM-dd" />
+		<param name="append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] [%c] [%t] -- %m%n"/>
+		</layout>
+	</appender>
 
 	<logger name="org.quartz"  additivity="false">
 		<level value="DEBUG" />
@@ -107,6 +116,16 @@
         <appender-ref ref="ormLogFileAppender"/>
     </logger>
 
+	<logger name="ru.programpark.orm.cayenne.replication.channel.ORMT_LOAN" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="loanChannel"/>
+    </logger>
+	
+	<logger name="ru.programpark.orm.cayenne.replication.channel.ORMT_PERSON" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="loanChannel"/>
+    </logger>
+	
 	<root>
 		<priority value="INFO"/>
 		<appender-ref ref="systemLogFileAppender"/>

@@ -7,14 +7,14 @@ class Shortcuts
   ARGS = {'master' => '', 'slave' => 'NBDesigner', 'client' => 'NBDesigner'}
 
   def self.bin_dir
-    @@bin_dir ||= File.absolute_path(File.dirname(__FILE__)).gsub /\//, '\\'
+    @bin_dir ||= File.absolute_path(File.dirname(__FILE__)).gsub /\//, '\\'
   end
 
-  def tmp_io
-    return @@file if @@file
-    @@file = File.new "link.vbs", 'w' #Tempfile.new('create_demo_links.vbs')
-    @@file.write %q{Set oWS = WScript.CreateObject("WScript.Shell")}
-    @@file
+  def self.tmp_io
+    return @file if @file
+    @file = File.new "link.vbs", 'w' #Tempfile.new('create_demo_links.vbs')
+    @file.write %q{Set oWS = WScript.CreateObject("WScript.Shell")}
+    @file
   end
 
   def self.args cfg_name
@@ -69,7 +69,7 @@ class Shortcuts
   def self.generate_node_link(target_dir, node_name, args)
     puts "link #{target_dir} #{node_name} #{args}"
     lnk_file = "#{bin_dir}\\#{target_dir}\\#{node_name}.lnk"
-    File.delete lnk_file
+    File.delete lnk_file rescue nil
     tmp_io.write %Q{
     Set oLink = oWS.CreateShortcut("#{lnk_file}")
     oLink.Arguments =  "#{node_name} #{args}"
@@ -83,7 +83,7 @@ class Shortcuts
   def self.generate_log_link(target_dir, log_dir, node_name)
     log_dir = File.absolute_path(log_dir).gsub /\//, '\\'
     lnk_file = "#{bin_dir}\\#{target_dir}\\#{node_name} log.lnk"
-    File.delete lnk_file
+    File.delete lnk_file rescue nil
     FileUtils.mkdir_p log_dir
     tmp_io.write %Q{
     Set oLink = oWS.CreateShortcut("#{lnk_file}")
