@@ -92,8 +92,8 @@ Module.recreate :ORMT_Utils do
         indices.each_with_index do |columns, i|
           table = orm_module.upcase
           idx = table+'_IDX'  + i
-          idx_query = "CREATE INDEX #{idx} ON #{table} (#{columns.join(', ')})"
-          drop_query = "DROP INDEX #{idx}"
+          idx_query = "CREATE INDEX \"#{idx}\" ON \"#{table}\" (\"#{columns.join('", "')}\")"
+          drop_query = "DROP INDEX \"#{idx}\""
           begin
             orm.execute do
               query drop_query

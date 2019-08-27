@@ -8,5 +8,5 @@ set HSQL_PARAMS=--database.0 file:%CLUSTER1_HOME%\master\rvec --dbname.0 m1 ^
 --database.4 file:%CLUSTER3_HOME%\master\rvec --dbname.4 m3 ^
 --database.5 file:%CLUSTER3_HOME%\slave\rvec   --dbname.5 s3 ^
 --port 9001 --address localhost
-"%JAVA_HOME%\bin\java" -Xmx512m -Xms128m -cp %HSQL_PATH% org.hsqldb.server.Server  %HSQL_PARAMS%
+"%JAVA_HOME%\bin\java" -Xmx2048m -Xms128m -cp %HSQL_PATH% org.hsqldb.server.Server  %HSQL_PARAMS%
 endlocal

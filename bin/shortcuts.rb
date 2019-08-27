@@ -4,7 +4,7 @@ class Shortcuts
 
   MAPPING = {'m' => 'master', 's' => 'slave', 'c' => 'client'}
   REVERSE_MAPPING = MAPPING.invert
-  ARGS = {'master' => '', 'slave' => 'NBDesigner', 'client' => 'NBDesigner'}
+  ARGS = {'master' => '', 'slave' => 'NBDesigner --classloader-public-only', 'client' => 'NBDesigner'}
 
   def self.bin_dir
     @bin_dir ||= File.absolute_path(File.dirname(__FILE__)).gsub /\//, '\\'

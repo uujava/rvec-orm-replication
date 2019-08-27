@@ -8,21 +8,25 @@
 		</layout>
 	</appender>
 
-	<appender name="systemLogFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="${log_dir}/vector.log" />
-		<param name="datePattern" value="'.'yyyy-MM-dd" />
-		<param name="append" value="true" />
+	<appender name="systemLogFileAppender" class="ru.programpark.logger.rolling.RollingFileAppender">
+		<param name="file" value="${log_dir}/vector-${log_start}.log" />
+		<rollingPolicy class="ru.programpark.logger.rolling.TimeBasedRollingPolicy">
+			<param name="FileNamePattern" value="${log_dir}/vector-${log_start}.%d{yyyy-MM-dd}.zip"/>
+		</rollingPolicy>
+		<triggeringPolicy class="ru.programpark.logger.rolling.SizeBasedTriggeringPolicy">
+			<param name="MaxFileSize" value="200000000"/>
+		</triggeringPolicy>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] [%c] [%t] -- %m%n"/>
 		</layout>
 	</appender>
-
+	
     <appender name="ormLogFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="file" value="${log_dir}/cayenne.log" />
         <param name="datePattern" value="'.'yyyy-MM-dd" />
         <param name="append" value="true" />
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] [%c] [%t] -- %m%n"/>
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] [%c] [%t]  [%X{orm-request-info}] -- %m%n"/>
         </layout>
     </appender>
 
@@ -92,17 +96,17 @@
 	</logger>
 
 	<logger name="org.apache.cayenne.configuration" additivity="false">
-		<level value="ERROR"/>
+		<level value="DEBUG"/>
 		<appender-ref ref="ormLogFileAppender"/>
 	</logger>
 
 	<logger name="org.apache.cayenne.access.QueryLogger" additivity="false">
-		<level value="INFO"/>
+		<level value="DEBUG"/>
 		<appender-ref ref="ormLogFileAppender"/>
 	</logger>
 	
 	<logger name="org.apache.cayenne.access" additivity="false">
-		<level value="ERROR"/>
+		<level value="DEBUG"/>
 		<appender-ref ref="ormLogFileAppender"/>
 	</logger>
 
@@ -112,10 +116,16 @@
 	</logger>
 
     <logger name="ru.programpark.orm.cayenne" additivity="false">
-        <level value="DEBUG"/>
+        <level value="INFO"/>
         <appender-ref ref="ormLogFileAppender"/>
     </logger>
 
+	
+    <logger name="ru.programpark.orm.cayenne.ha" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="ormLogFileAppender"/>
+    </logger>
+	
 	<logger name="ru.programpark.orm.cayenne.replication.channel.ORMT_LOAN" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="loanChannel"/>
@@ -125,6 +135,11 @@
         <level value="DEBUG"/>
         <appender-ref ref="loanChannel"/>
     </logger>
+
+	<logger name="$log" additivity="false">
+		<level value="DEBUG"/>
+		<appender-ref ref="systemLogFileAppender"/>
+	</logger>
 	
 	<root>
 		<priority value="INFO"/>
