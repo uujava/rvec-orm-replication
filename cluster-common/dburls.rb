@@ -6,6 +6,7 @@ DBURLS = {
     :pgsql => 'jdbc:postgresql://192.168.3.231:5432/repl_database',
 	:db01 => 'jdbc:oracle:thin:@192.168.3.4:1521:db01',
 	:orcl => 'jdbc:oracle:thin:@127.0.0.1:1521/orcl',	
+	:ora_docker => 'jdbc:oracle:thin:@127.0.0.1:1521/ORCLCDB.localdomain',
   },
   :s1 => {
     :vm => 'jdbc:oracle:thin:@192.168.17.128:1521/ora11',
@@ -13,7 +14,26 @@ DBURLS = {
     :oraclee => 'jdbc:oracle:thin:@192.168.3.24:1521/orclee.programpark.ru',
     :pgsql => 'jdbc:postgresql://192.168.3.232:5432/repl_database',
 	:db01 => 'jdbc:oracle:thin:@192.168.3.4:1521:db01',
+	:orcl => 'jdbc:oracle:thin:@127.0.0.1:1521/orcl',		
+	:ora_docker => 'jdbc:oracle:thin:@127.0.0.1:1521/ORCLCDB.localdomain',
+  },
+   :m2 => {
+    :vm => 'jdbc:oracle:thin:@192.168.17.128:1521/ora11',
+    :hsql  => 'jdbc:hsqldb:hsql://localhost:9001/m2',
+    :oraclee => 'jdbc:oracle:thin:@192.168.3.24:1521/orclee.programpark.ru',
+    :pgsql => 'jdbc:postgresql://192.168.3.231:5432/repl_database',
+	:db01 => 'jdbc:oracle:thin:@192.168.3.4:1521:db01',
 	:orcl => 'jdbc:oracle:thin:@127.0.0.1:1521/orcl',	
+	:ora_docker => 'jdbc:oracle:thin:@127.0.0.1:1521/ORCLCDB.localdomain',
+  },
+  :s2 => {
+    :vm => 'jdbc:oracle:thin:@192.168.17.128:1521/ora11',
+    :hsql => 'jdbc:hsqldb:hsql://localhost:9001/s2',
+    :oraclee => 'jdbc:oracle:thin:@192.168.3.24:1521/orclee.programpark.ru',
+    :pgsql => 'jdbc:postgresql://192.168.3.232:5432/repl_database',
+	:db01 => 'jdbc:oracle:thin:@192.168.3.4:1521:db01',
+	:orcl => 'jdbc:oracle:thin:@127.0.0.1:1521/orcl',		
+	:ora_docker => 'jdbc:oracle:thin:@127.0.0.1:1521/ORCLCDB.localdomain',
   }
 }
 def parse_url dburl
@@ -27,7 +47,7 @@ def parse_url dburl
   
   (ip, port, resource) = host.split ":"
   
-  rise "wrong url $dburl" if port.nil? 
+  raise "wrong url $dburl" if port.nil? 
 
   puts "parsed protocol: #{protocol}"  
   puts "parsed ip: #{ip}"

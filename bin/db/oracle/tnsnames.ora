@@ -1,0 +1,1 @@
+ORCLCDB=(description=(address=(protocol=TCP)(host=localhost)(port=1521))(connect_data=(sid=ORCLCDB)))

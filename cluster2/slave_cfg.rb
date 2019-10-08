@@ -1,4 +1,7 @@
-﻿{
+﻿require NBStarter.config_dir+"/../cluster-common/dburls"
+dbkey = ENV['DB_ALIAS'] || 'hsql'
+dburl = DBURLS[:s2][dbkey.downcase.to_sym]
+{
 	'server' => [
 		{
 			'port' => '2011',
@@ -10,7 +13,7 @@
 	],
 	'database' => [
 		{
-			'dburl' => 'jdbc:hsqldb:hsql://localhost/s2',
+			'dburl' => dburl,
 			'user' => 'S2',
 			'password' => 'S2'
 		}

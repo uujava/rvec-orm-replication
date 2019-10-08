@@ -1,4 +1,4 @@
-﻿require NBStarter.config_dir+"/dburls"
+﻿require NBStarter.config_dir+"/../cluster-common/dburls"
 dbkey = ENV['DB_ALIAS'] || 'hsql'
 dburl = DBURLS[:m1][dbkey.downcase.to_sym]
 puts "dburl: " +  dburl

@@ -1,7 +1,7 @@
 module ::LoadTest
-  MAX_THREADS = 3
+  MAX_THREADS = 50
 
-  MAX_RECORDS = 500*1000
+  MAX_RECORDS = 100*1000
   @@CLEANUP_DELAY = 20
 
   PRIME_NUMBERS = [
@@ -221,7 +221,7 @@ puts "pair server #{::LoadTest.pair_server}:#{::LoadTest.pid ::LoadTest.pair_ser
 
 ::LoadTest.thread_name "MainTest"
 ::LoadTest.validate
-::LoadTest.start_load 600, 0.025
+::LoadTest.start_load 450, 0.025
 ::LoadTest.start_cleanup
 
 # tests should include:

@@ -21,5 +21,5 @@ set CLUSTER2_HOME=%~dp0..\cluster2
 set CLUSTER3_HOME=%~dp0..\cluster3
 set CLUSTER4_HOME=%~dp0..\cluster4
 set SRC_DIR=%~dp0/../orm-replication-scripts/src
-REM valid DB: [hsql],vm,oraclee,pgsql,db01
-set DB_ALIAS=oraclee
+REM valid DB: [hsql],vm,oraclee,pgsql,db01,ora_docker
+set DB_ALIAS=ora_docker
